@@ -19,7 +19,7 @@ class Report(commands.Cog):
         """Set the reports channel"""
         await self.db.find_one_and_update({"_id": "config"}, {"$set": {"report_channel": channel.id}}, upsert=True)
         
-        embed = discord.Embed(color=discord.Color.from_rgb(225,198,153)(), timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=discord.Color.from_rgb(47,49,54)(), timestamp=datetime.datetime.utcnow())
         embed.add_field(name="Set Channel", value=f"Successfully set the reports channel to {channel.mention}", inline=False)
         
         await ctx.send(embed=embed)
@@ -30,7 +30,7 @@ class Report(commands.Cog):
         """Sets the report mention"""
         await self.db.find_one_and_update({"_id": "config"}, {"$set": {"report_mention": mention}}, upsert=True)
         
-        embed = discord.Embed(color=discord.Color.from_rgb(225,198,153)(), timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=discord.Color.from_rgb(47,49,54)(), timestamp=datetime.datetime.utcnow())
         embed.add_field(name="Changed Mention", value=f"Successfully changed the report mention to {mention}", inline=False)
         
         await ctx.send(embed=embed)
@@ -47,7 +47,7 @@ class Report(commands.Cog):
         except KeyError:
             report_mention = ""
             
-        embed = discord.Embed(color=discord.Color.from_rgb(225,198,153)(), timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=discord.Color.from_rgb(47,49,54)(), timestamp=datetime.datetime.utcnow())
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         
         embed.add_field(name="Reported user", value=f"{user.mention} | ID: {user.id}", inline=False)
