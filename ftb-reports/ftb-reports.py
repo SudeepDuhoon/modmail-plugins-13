@@ -60,6 +60,11 @@ class Report(commands.Cog):
             await ctx.message.delete()
         except discord.errors.Forbidden:
             await ctx.send("Not enough permissions to delete messages.", delete_after=2)
+
+        try:
+            await ctx.author.send("Your report has been delivered to the Moderation Team.")
+        except:
+            await setchannel.send(f"Failed to DM {ctx.author.mention}.")
                         
 def setup(bot):
     bot.add_cog(Report(bot))
