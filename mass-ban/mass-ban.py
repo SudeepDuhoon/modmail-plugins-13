@@ -12,17 +12,17 @@ class MassBan(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.api.get_plugin_partition(self)
-
 
     @commands.command(aliases=["mban"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def massban(self, ctx, members: commands.Greedy[discord.Member], days: typing.Optional[int] = 0, *, reason: str = None):
         """Mass-bans members
-        {prefix}mban <members seperated by space> <deleted message for number of days> <reason>
+        \n[massban/mban] <members (seperated by space)> <deleted message for number of days (optional)> <reason>
         """
-        
-        config = await self.db.find_one({"_id": "config"})
+
+        if members is None:
+            ctx.send_help(ctx.command)
+
         for member in members:
             try:
                 await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
