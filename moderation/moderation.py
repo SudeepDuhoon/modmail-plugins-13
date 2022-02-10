@@ -21,7 +21,7 @@ class Moderation(commands.Cog):
         """Set the logs channel"""
         await self.db.find_one_and_update({"_id": "config"}, {"$set": {"logs_channel": channel.id}}, upsert=True)
         
-        embed = discord.Embed(self.defaultColor, timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
         embed.add_field(name="Set Channel", value=f"Successfully set the logs channel to {channel.mention}", inline=False)
         
         await ctx.send(embed=embed)
