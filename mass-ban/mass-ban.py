@@ -1,4 +1,3 @@
-import datetime
 import typing
 
 import discord
@@ -22,17 +21,14 @@ class MassBan(commands.Cog):
         ├─ `Days` - deleted messages for number of days (optional; default is 0).
         └─ `Reason` - self explanatory; optional."""
 
-        if members is None:
-            for member in members:
-                try:
-                    await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
-                except discord.Forbidden:
-                    await ctx.send("I don't have the proper permissions to ban people.")
-                except Exception as e:
-                    await ctx.send("An unexpected error occurred, please check the logs for more details.")
-                    return
-        else:
-            return await ctx.send_help(ctx.command)
+        for member in members:
+            try:
+                await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
+            except discord.Forbidden:
+                await ctx.send("I don't have the proper permissions to ban people.")
+            except Exception as e:
+                await ctx.send("An unexpected error occurred, please check the logs for more details.")
+                return
                         
 def setup(bot):
     bot.add_cog(MassBan(bot))
