@@ -12,6 +12,7 @@ class MassBan(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
+        self.db = bot.api.get_plugin_partition(self)
 
 
     @commands.command(aliases=["mban"])
@@ -20,6 +21,8 @@ class MassBan(commands.Cog):
         """Mass-bans members
         {prefix}mban <members seperated by space> <deleted message for number of days> <reason>
         """
+        
+        config = await self.db.find_one({"_id": "config"})
         for member in members:
             try:
                 await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
