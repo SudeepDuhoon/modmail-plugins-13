@@ -4,7 +4,7 @@
 </div>
 
 
-### Plugins made for From the Beginning of Time (FTB)
+### Plugins made by Kita
 | Name          | Description                                            | Installation                                       |
 |---------------|--------------------------------------------------------|----------------------------------------------------|
-| Reports | An easy way for your members to report bad behavior.         | `plugin add dpskita/modmail-plugins/ftb-reports`   |
+| Moderation    | Moderation System                                      | `plugin add dpskita/modmail-plugins/moderation`    |
