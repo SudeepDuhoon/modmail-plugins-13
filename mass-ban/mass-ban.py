@@ -29,7 +29,7 @@ class MassBan(commands.Cog):
                     embed = discord.Embed(color=0x2f3136, timestamp=datetime.datetime.utcnow())
                     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
                     
-                    embed.add_field(name="Banned user(s)", value=f"{members.mention} | ID: {members.id}", inline=False)
+                    embed.add_field(name="Banned user(s)", value=f"{member.mention} | ID: {member.id}", inline=False)
                     embed.add_field(name="Banned by:", value=f"{ctx.author.mention} | ID: {ctx.author.id}", inline=False)
                     embed.add_field(name="Reason", value=reason, inline=False)
 
