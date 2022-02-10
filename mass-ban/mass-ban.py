@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 import discord
 from discord.ext import commands
@@ -11,6 +12,7 @@ class MassBan(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
+        self.db = bot.api.get_plugin_partition(self)
 
 
     @commands.command(aliases=["mban"])
