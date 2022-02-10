@@ -16,21 +16,17 @@ class MassBan(commands.Cog):
     @commands.command(aliases=["mban"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def massban(self, ctx, members: commands.Greedy[discord.Member], days: typing.Optional[int] = 0, *, reason: str = None):
-        """Mass-bans members
-        \n[massban/mban] <members (seperated by space)> <deleted message for number of days (optional)> <reason>
-        """
+        """*Mass-bans members*\n\nNotes:\nSeperate members by space.\nDeleted message for number of days is optional."""
 
         if members is None:
-            ctx.send_help(ctx.command)
-
-        for member in members:
-            try:
-                await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
-            except discord.Forbidden:
-                await ctx.send("I don't have the proper permissions to ban people.")
-            except Exception as e:
-                await ctx.send("An unexpected error occurred, please check the logs for more details.")
-                return
+            for member in members:
+                try:
+                    await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
+                except discord.Forbidden:
+                    await ctx.send("I don't have the proper permissions to ban people.")
+                except Exception as e:
+                    await ctx.send("An unexpected error occurred, please check the logs for more details.")
+                    return
                         
 def setup(bot):
     bot.add_cog(MassBan(bot))
