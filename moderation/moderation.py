@@ -41,6 +41,7 @@ class Moderation(commands.Cog):
         if members is not None:
             for member in members:
                 try:
+                    member = "<@" + member + ">"
                     await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
                     embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
                     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
