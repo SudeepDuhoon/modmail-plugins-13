@@ -7,6 +7,25 @@ from discord.ext import commands
 from core import checks
 from core.models import PermissionLevel
 
+MEMBER_ID_REGEX = re.compile(r'<@!?([0-9]+)>$')
+
+class MemberOrID(commands.IDConverter):
+    async def convert(self, ctx: commands.Context, argument: str) -> Union[discord.Member, discord.User]:
+        result: Union[discord.Member, discord.User]
+        try:
+            result = await commands.MemberConverter().convert(ctx, argument)
+        except commands.BadArgument:
+            match = self._get_id_match(argument) or MEMBER_ID_REGEX.match(argument)
+            if match:
+                try:
+                    result = await ctx.bot.fetch_user(int(match.group(1)))
+                except discord.NotFound as e:
+                    raise commands.BadArgument(f'Member {argument} not found') from e
+            else:
+                raise commands.BadArgument(f'Member {argument} not found')
+
+        return result
+
 class Moderation(commands.Cog): 
     """Author: @dpsKita"""
     
@@ -40,6 +59,8 @@ class Moderation(commands.Cog):
 
         if members is not None:
             for member in members:
+                if not isinstance(member, (discord.User, discord.Member)):
+                    member = await MemberOrID.convert(self, ctx, member)
                 try:
                     await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
                     embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
