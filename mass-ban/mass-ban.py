@@ -30,7 +30,7 @@ class MassBan(commands.Cog):
                 except Exception as e:
                     await ctx.send("An unexpected error occurred, please check the logs for more details.")
                     return
-        else:
+        elif members is None:
             return await ctx.send_help(ctx.command)
                         
 def setup(bot):
