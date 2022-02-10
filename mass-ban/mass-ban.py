@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 import discord
@@ -25,6 +26,14 @@ class MassBan(commands.Cog):
             for member in members:
                 try:
                     await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
+                    embed = discord.Embed(color=0x2f3136, timestamp=datetime.datetime.utcnow())
+                    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+                    
+                    embed.add_field(name="Banned user(s)", value=f"{members.mention} | ID: {members.id}", inline=False)
+                    embed.add_field(name="Banned by:", value=f"{ctx.author.mention} | ID: {ctx.author.id}", inline=False)
+                    embed.add_field(name="Reason", value=reason, inline=False)
+
+                    await ctx.send(embed=embed)
                 except discord.Forbidden:
                     await ctx.send("I don't have the proper permissions to ban people.")
                 except Exception as e:
