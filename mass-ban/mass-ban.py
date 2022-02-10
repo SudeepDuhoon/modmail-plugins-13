@@ -17,7 +17,9 @@ class MassBan(commands.Cog):
     @commands.command(aliases=["mban"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
     async def massban(self, ctx, members: commands.Greedy[discord.Member], days: typing.Optional[int] = 0, *, reason: str = None):
-        """Mass-bans members"""
+        """Mass-bans members
+        {prefix}mban <members seperated by space> <deleted message for number of days> <reason>
+        """
         for member in members:
             try:
                 await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
