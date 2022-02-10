@@ -1,5 +1,6 @@
 import datetime
 import typing
+import re
 
 import discord
 from discord.ext import commands
@@ -10,8 +11,8 @@ from core.models import PermissionLevel
 MEMBER_ID_REGEX = re.compile(r'<@!?([0-9]+)>$')
 
 class MemberOrID(commands.IDConverter):
-    async def convert(self, ctx: commands.Context, argument: str) -> Union[discord.Member, discord.User]:
-        result: Union[discord.Member, discord.User]
+    async def convert(self, ctx: commands.Context, argument: str) -> typing.Union[discord.Member, discord.User]:
+        result: typing.Union[discord.Member, discord.User]
         try:
             result = await commands.MemberConverter().convert(ctx, argument)
         except commands.BadArgument:
