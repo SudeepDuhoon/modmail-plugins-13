@@ -8,11 +8,10 @@ from core import checks
 from core.models import PermissionLevel
 
 class MassBan(commands.Cog): 
-    """Created by @dpsKita"""
+    """Author: @dpsKita"""
     
     def __init__(self, bot):
         self.bot = bot
-        self.db = bot.api.get_plugin_partition(self)
 
 
     @commands.command(aliases=["mban"])
