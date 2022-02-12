@@ -35,20 +35,9 @@ class Moderation(commands.Cog):
         self.defaultColor = 0x2f3136
         self.db = bot.api.get_plugin_partition(self)
 
-    @commands.command(aliases=["lchannel"])
+    @commands.group(invoke_without_command=True, usage='\u200b', aliases=["mban"])
     @checks.has_permissions(PermissionLevel.MODERATOR)
-    async def logschannel(self, ctx, channel: discord.TextChannel):
-        """Set the logs channel"""
-        await self.db.find_one_and_update({"_id": "config"}, {"$set": {"logs_channel": channel.id}}, upsert=True)
-        
-        embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
-        embed.add_field(name="Set Channel", value=f"Successfully set the logs channel to {channel.mention}", inline=False)
-        
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=["mban"])
-    @checks.has_permissions(PermissionLevel.MODERATOR)
-    async def massban(self, ctx, members: commands.Greedy[discord.Member], days: typing.Optional[int] = 0, *, reason: str = None):
+    async def massban(self, ctx, members: commands.Greedy[discord.Member] = None, days: typing.Optional[int] = 0, *, reason: str = None) -> None:
         """*Mass-bans members*\n
         Note(s)
         ├─ `Members` - seperate by space.
@@ -58,31 +47,54 @@ class Moderation(commands.Cog):
         logs_channel = config["logs_channel"]
         setchannel = discord.utils.get(ctx.guild.channels, id=int(logs_channel))
 
-        if members is not None:
-            for member in members:
-                if not isinstance(member, (discord.User, discord.Member)):
-                    member = await MemberOrID.convert(self, ctx, member)
-                try:
-                    await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
-                    embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
-                    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-                    
-                    embed.add_field(name="Banned user:", value=f"{member.mention} | ID: {member.id}", inline=False)
-                    embed.add_field(name="Banned by:", value=f"{ctx.author.mention} | ID: {ctx.author.id}", inline=False)
-                    embed.add_field(name="Reason", value=reason, inline=False)
-
-                    await setchannel.send(embed=embed)
-                except discord.Forbidden:
-                    await ctx.send("I don't have the proper permissions to ban people.")
-                except Exception as e:
-                    await ctx.send("An unexpected error occurred, please check the logs for more details.")
-                    return
-                try:
-                    await ctx.message.delete()
-                except discord.errors.Forbidden:
-                    await ctx.send("Not enough permissions to delete messages.", delete_after=2)
-        elif members is None:
+        if members is None:
             return await ctx.send_help(ctx.command)
+
+        banned = 0
+        for member in members:
+            embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
+            if not isinstance(member, (discord.User, discord.Member)):
+                member = await MemberOrID.convert(self, ctx, member)
+            try:
+                await member.ban(delete_message_days=days, reason=f"{reason if reason else None}")
+                banned += 1
+                embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+                embed.add_field(name="Banned user:", value=f"{member.mention} | ID: {member.id}", inline=False)
+                embed.add_field(name="Banned by:", value=f"{ctx.author.mention} | ID: {ctx.author.id}", inline=False)
+                embed.add_field(name="Reason", value=reason, inline=False)
+
+            except discord.Forbidden:
+                embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+                embed.add_field(name="FAILED:", value=f"{member.mention} | ID: {member.id}", inline=False)
+                embed.add_field(name="Attempt by:", value=f"{ctx.author.mention} | ID: {ctx.author.id}", inline=False)
+                embed.add_field(name="Reason", value=reason, inline=False)
+
+            except Exception as e:
+                embed.add_field(name="Error", value=e, inline=False)
+
+            await setchannel.send(embed=embed)
+
+        await setchannel.send(
+            embed=discord.Embed(color=self.defaultColor, description=(
+            f"Banned {banned} {'members' if banned > 1 else 'member'}\n"
+            f"Failed to ban {len(members)-banned} {'members' if len(members)-banned > 1 else 'member'}"
+            )))
+
+        try:
+            await ctx.message.delete()
+        except discord.errors.Forbidden:
+            await ctx.send("Not enough permissions to delete messages.", delete_after=2)
+
+    @massban.command(aliases=["lchannel"])
+    @checks.has_permissions(PermissionLevel.MODERATOR)
+    async def logschannel(self, ctx, channel: discord.TextChannel):
+        """Set the logs channel"""
+        await self.db.find_one_and_update({"_id": "config"}, {"$set": {"logs_channel": channel.id}}, upsert=True)
+        
+        embed = discord.Embed(color=self.defaultColor, timestamp=datetime.datetime.utcnow())
+        embed.add_field(name="Set Channel", value=f"Successfully set the logs channel to {channel.mention}", inline=False)
+        
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
